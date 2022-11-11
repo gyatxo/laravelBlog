@@ -2,7 +2,7 @@
     <main class="max-w-6xl mx-auto mt-10 lg:mt-20 space-y-6">
         <article class="max-w-4xl mx-auto lg:grid lg:grid-cols-12 gap-x-10">
             <div class="col-span-4 lg:text-center lg:pt-14 mb-10">
-                <img src="/images/illustration-1.png" alt="" class="rounded-xl">
+                <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="" class="rounded-xl">
 
                 <p class="mt-4 block text-gray-400 text-xs">
                     Published <time>{{ $post->created_at->diffForHumans() }}</time>
@@ -51,9 +51,40 @@
                 </div>
             </div>
             <section class="col-start-5 col-span-8 mt-5 space-y-6">
-                <x-post-comment />
-                <x-post-comment />
-                <x-post-comment />
+                @auth
+                    <form action="/posts/{{ $post->id }}/comments" method="post"
+                        class="border border-gray-200 p-6 rounded-xl">
+                        @csrf
+
+                        <header class="flex items-center">
+                            <img src="https://i.pravatar.cc/60?u={{ auth()->id() }}" alt="" width="40"
+                                height="40" class="rounded-full">
+
+                            <h2 class="ml-4">Post a comment!</h2>
+                        </header>
+                        <div class="mt-6">
+                            <textarea name="body" class="w-full text-sm" rows="5" placeholder="Post a comment!" required></textarea>
+                            @error('body')
+                                <p class="text-red-500 text-xs">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+                        <div class="flex justify-end mt-6 pt-6 border-t border-gray-200">
+                            <button type="submit"
+                                class="bg-blue-500 text-xs text-white uppercase font-semibold py-2 px-10 rounded-2xl hover:bg-blue-600">POST
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    <p class="font-semibold">
+                        <a href="/register" class="hover:text-blue-500">Register</a> or <a href="/login"
+                            class="hover:text-blue-500"> Login </a> to leave a comment.
+                    </p>
+                @endauth
+                @foreach ($post->comments as $comment)
+                    <x-post-comment :comment="$comment" />
+                @endforeach
             </section>
         </article>
     </main>

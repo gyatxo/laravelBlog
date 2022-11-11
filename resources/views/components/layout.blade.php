@@ -17,7 +17,24 @@
 
             <div class="mt-8 md:mt-0 flex items-center gap-3">
                 @auth
-                    <span class="font-bold text-sm uppercase">Welcome, {{ auth()->user()->name }}</span>
+                    <div x-data="{ show: false }" @click.away="show=false">
+                        <button @click="show = ! show" class="font-bold text-sm uppercase">Welcome,
+                            {{ auth()->user()->name }}</button>
+
+                        @can('admin')
+                            <div x-show="show"
+                                class="absolute z-50 py-1 mt-2 rounded-xl w-48 bg-gray-100 max-h-52 overflow-auto"
+                                style="display: none;">
+                                <a href="/admin/posts"
+                                    class="rounded-xl block text-left px-3 text-sm leading-6 hover:bg-blue-500 focus:bg-blue-500 hover:text-white focus:text-white
+                        {{ request()->is('admin/posts') ? 'bg-blue-500' : '' }}">Dashboard</a>
+                                <a href="/admin/posts/create"
+                                    class="rounded-xl block text-left px-3 text-sm leading-6 hover:bg-blue-500 focus:bg-blue-500 hover:text-white focus:text-white
+                        {{ request()->is('admin/posts/create') ? 'bg-blue-500' : '' }}">New
+                                    Post</a>
+                            </div>
+                        @endcan
+                    </div>
                     <form action="/logout" method="post" class="text-blue-700 ml-3 font-semibold text-sm">
                         @csrf
                         <button type="submit">Logout</button>
